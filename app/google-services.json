@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "541548480055",
+    "project_id": "finalproject-b4c2a",
+    "storage_bucket": "finalproject-b4c2a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:541548480055:android:21e290207b9b4463afe1b2",
+        "android_client_info": {
+          "package_name": "com.example.haniph_n_finalproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8Eotoqibeb388A7tflOWuCmKGTVCAoys"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

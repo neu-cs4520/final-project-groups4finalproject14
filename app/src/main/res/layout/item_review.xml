@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/user_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Email"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/review_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4/5"
+            android:textAppearance="?attr/textAppearanceBody1" />
+
+        <ImageView
+            android:id="@+id/star_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_star"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/review_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="The movie was amazing! Bravo"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:paddingTop="4dp" />
+</LinearLayout>
