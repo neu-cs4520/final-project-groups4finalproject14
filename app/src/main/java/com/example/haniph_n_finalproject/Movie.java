@@ -10,6 +10,7 @@ public class Movie {
     private String release_date;
     private List<Genre> genres;
     private float vote_average;
+    private List<Integer> genre_ids;
 
     public String getId() {
         return id;
@@ -35,23 +36,30 @@ public class Movie {
         return genres;
     }
 
-
     public float getVoteAverage() {
         return vote_average;
     }
-}
 
-class Genre {
-    private int id;
-    private String name;
-
-    public int getId() {
-        return id;
+    public List<Integer> getGenreIds() {
+        return genre_ids;
     }
 
-    public String getName() {
-        return name;
+    public void setGenreIds(List<Integer> genreIds) {
+        this.genre_ids = genreIds;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", poster_path='" + poster_path + '\'' +
+                ", overview='" + overview + '\'' +
+                ", release_date='" + release_date + '\'' +
+                ", genres=" + genres +
+                ", vote_average=" + vote_average +
+                ", genre_ids=" + genre_ids +
+                '}';
     }
 }
-
 

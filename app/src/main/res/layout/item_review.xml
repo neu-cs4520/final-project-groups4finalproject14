@@ -12,33 +12,33 @@
         android:gravity="center_vertical">
 
         <TextView
-            android:id="@+id/user_email"
-            android:layout_width="wrap_content"
+            android:id="@+id/review_user_email"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="User Email"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="user@example.com"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/review_rating"
+            android:id="@+id/review_stars"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="4/5"
-            android:textAppearance="?attr/textAppearanceBody1" />
+            android:textStyle="bold"
+            android:drawableStart="@drawable/ic_star"
+            android:drawablePadding="4dp" />
 
         <ImageView
-            android:id="@+id/star_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_star"
-            android:layout_marginStart="4dp" />
+            android:id="@+id/overflow_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_overflow_menu" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/review_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="The movie was amazing! Bravo"
-        android:textAppearance="?attr/textAppearanceBody2"
-        android:paddingTop="4dp" />
+        android:text="The movie was amazing! Bravo" />
+
 </LinearLayout>

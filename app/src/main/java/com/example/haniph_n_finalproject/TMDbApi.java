@@ -6,6 +6,9 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface TMDbApi {
+
+    @GET("genre/movie/list")
+    Call<GenresResponse> getGenres(@Query("api_key") String apiKey);
     @GET("movie/popular")
     Call<MoviesResponse> getPopularMovies(@Query("api_key") String apiKey, @Query("page") int page);
 
@@ -29,4 +32,9 @@ public interface TMDbApi {
 
     @GET("movie/{movie_id}/recommendations")
     Call<MoviesResponse> getRecommendedMovies(@Path("movie_id") String movieId, @Query("api_key") String apiKey);
+
+    @GET("search/movie")
+    Call<MoviesResponse> searchMovies(@Query("api_key") String apiKey, @Query("query") String query);
+
+
 }

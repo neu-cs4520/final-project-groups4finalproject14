@@ -3,9 +3,11 @@ package com.example.haniph_n_finalproject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -62,7 +64,8 @@ public class LoginRegisterActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    startActivity(new Intent(LoginRegisterActivity.this, HomeActivity.class));
+                    //startActivity(new Intent(LoginRegisterActivity.this, HomeActivity.class));
+                    startActivity(new Intent(LoginRegisterActivity.this, MainActivity.class));
                     finish();
                 } else {
                     Snackbar.make(findViewById(R.id.login_button), "Login failed: " + task.getException().getMessage(), Snackbar.LENGTH_LONG).show();
@@ -80,11 +83,22 @@ public class LoginRegisterActivity extends AppCompatActivity {
             return;
         }
 
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(LoginRegisterActivity.this, "Email must be in a valid email format (e.g., 123@xyz.com)", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (password.length() < 6) {
+            Toast.makeText(LoginRegisterActivity.this, "Password must be at least 6 characters long", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    startActivity(new Intent(LoginRegisterActivity.this, HomeActivity.class));
+                    //startActivity(new Intent(LoginRegisterActivity.this, HomeActivity.class));
+                    startActivity(new Intent(LoginRegisterActivity.this, MainActivity.class));
                     finish();
                 } else {
                     Snackbar.make(findViewById(R.id.register_button), "Registration failed: " + task.getException().getMessage(), Snackbar.LENGTH_LONG).show();

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_share_email"
+        android:title="Share via Email" />
+    <item
+        android:id="@+id/menu_share_twitter"
+        android:title="Share via X/Twitter" />
+    <item
+        android:id="@+id/menu_share_reddit"
+        android:title="Share via Reddit" />
+</menu>

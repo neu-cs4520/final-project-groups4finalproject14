@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -70,6 +69,14 @@ public class MovieDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
+
+        // Start the review background service
+        Intent reviewServiceIntent = new Intent(this, ReviewCheckService.class);
+        startService(reviewServiceIntent);
+
+        // Start the recommendation background service
+        Intent recommendationServiceIntent = new Intent(this, RecommendationCheckService.class);
+        startService(recommendationServiceIntent);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -129,7 +136,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         // Initialize reviews RecyclerView
         reviews = new ArrayList<>();
-        reviewAdapter = new ReviewAdapter(reviews);
+        String currentUserId = currentUser != null ? currentUser.getUid() : "";
+        reviewAdapter = new ReviewAdapter(reviews, this, currentUserId);
         reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         reviewsRecyclerView.setAdapter(reviewAdapter);
 
@@ -164,14 +172,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     private void fetchMovieDetails(String movieId) {
-        Log.d(TAG, "Fetching movie details for movieId: " + movieId);
+        //Log.d(TAG, "Fetching movie details for movieId: " + movieId);
 
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .build();
+        OkHttpClient client = new OkHttpClient.Builder().build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -186,11 +189,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
             public void onResponse(Call<Movie> call, Response<Movie> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Movie movie = response.body();
-                    Log.d(TAG, "Movie details fetched successfully.");
+                    //Log.d(TAG, "Movie details fetched successfully.");
 
                     movieReleaseDate.setText("Release Date: " + movie.getReleaseDate());
                     movieGenres.setText("Genres: " + getGenresString(movie.getGenres()));
-                    movieVoteAverage.setText("Average Vote: " + String.format("%.1f", movie.getVoteAverage()) + "/10");
+                    movieVoteAverage.setText("Average TMDb Vote: " + String.format("%.1f", movie.getVoteAverage()) + "/10");
 
                     // Set up cast recycler view
                     fetchMovieCast(movieId);
@@ -221,14 +224,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     private void fetchMovieCast(String movieId) {
-        Log.d(TAG, "Fetching cast for movieId: " + movieId);
+        //Log.d(TAG, "Fetching cast for movieId: " + movieId);
 
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .build();
+        OkHttpClient client = new OkHttpClient.Builder().build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -242,14 +240,15 @@ public class MovieDetailsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<CastResponse> call, Response<CastResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Cast> allCast = response.body().getCast();
+                    List<Cast> allCast = response.body().getCast().subList(0, 6);
                     List<Cast> actingCast = new ArrayList<>();
+
                     for (Cast cast : allCast) {
                         if ("Acting".equals(cast.getKnownForDepartment())) {
                             actingCast.add(cast);
                         }
                     }
-                    Log.d(TAG, "Cast fetched successfully: " + actingCast.size() + " acting cast members found.");
+                    //Log.d(TAG, "Cast fetched successfully: " + actingCast.size() + " acting cast members found.");
                     castRecyclerView.setLayoutManager(new LinearLayoutManager(MovieDetailsActivity.this, LinearLayoutManager.HORIZONTAL, false));
                     castRecyclerView.setAdapter(new CastAdapter(actingCast));
                 } else {
@@ -265,14 +264,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     private void fetchMovieTrailer(String movieId) {
-        Log.d(TAG, "Fetching movie trailer for movieId: " + movieId);
+        //Log.d(TAG, "Fetching movie trailer for movieId: " + movieId);
 
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .build();
+        OkHttpClient client = new OkHttpClient.Builder().build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -287,10 +281,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
             public void onResponse(Call<TrailersResponse> call, Response<TrailersResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Trailer> trailers = response.body().getResults();
-                    Log.d(TAG, "Trailers fetched successfully: " + trailers.size() + " trailers found.");
+                    //Log.d(TAG, "Trailers fetched successfully: " + trailers.size() + " trailers found.");
                     if (!trailers.isEmpty()) {
                         String videoKey = trailers.get(0).getKey();
-                        Log.d(TAG, "Video Key: " + videoKey);
+                        //Log.d(TAG, "Video Key: " + videoKey);
 
                         // Initialize YouTube player with the fetched video key
                         youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
@@ -387,11 +381,22 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
                         if (queryDocumentSnapshots != null) {
                             reviews.clear();
+                            Review currentUserReview = null;
                             for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                                 String userEmail = document.getString("userEmail");
                                 String reviewText = document.getString("reviewText");
                                 int stars = document.getLong("stars").intValue();
-                                reviews.add(new Review(userEmail, reviewText, stars));
+                                String userId = document.getString("userId");
+                                Review review = new Review(userEmail, reviewText, stars, movieId, userId);
+
+                                if (currentUser != null && currentUser.getUid().equals(userId)) {
+                                    currentUserReview = review;
+                                } else {
+                                    reviews.add(review);
+                                }
+                            }
+                            if (currentUserReview != null) {
+                                reviews.add(0, currentUserReview);
                             }
                             reviewAdapter.notifyDataSetChanged();
                         }
@@ -399,3 +404,5 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 });
     }
 }
+
+
